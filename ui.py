@@ -35,14 +35,15 @@ def build_question(count, json_question):
 	return count
 
 uploaded_file = st.file_uploader(":female_student", type=["pdf"])
-txt = st.text_area('Text is here')
+#txt = st.text_area('Text is here')
 
+"""
 if st.button("Generate Quiz", key = f'button_generate'):
 	if txt is not None:
 		with st.spinner("Generating the quiz..."):
 			st.session_state['questions'] = asyncio.run(txt_to_quiz(txt))
 			st.write("Quiz generation is succesful!")
-
+"""
 if uploaded_file is not None:
 	old_file_name = st.session_state.get('uploaded_file_name', None)
 	if(old_file_name != uploaded_file.name):
@@ -56,24 +57,28 @@ if uploaded_file is not None:
 
 			st.write("Quiz generation is succesful!")
 
+if ('questions' in st.session_state):
+   
+    count = 0
+    for json_question in st.session_state['questions']:
+    	print(count)
+        
+    if st.button("Generate PDF Quiz", key=f"button_generer_quiz"):
+        with st.spinner("Generating the quiz..."):
+            json_questions = st.session_state['questions']
+          
+            file_name = uploaded_file.name
+
+          
+            if file_name.endswith(".pdf"):
+                file_name = file_name[:-4]
+
+            with open(f"data/quiz-{file_name}.json", "w", encoding='latin-1', errors='ignore') as f:
+                str = json.dumps(json_questions)
+                f.write(str)
+
+            generate_pdf_quiz(f"data/quiz-{file_name}.json", json_questions)
+            
+            st.write("PDF Quiz generated")        
+
 	
-if('questions' in st.session_state):
-	for json_question in st.session_state['questions']:
-		x+=1			
-		if st.button("Generate PDF Quiz", key= x):
-			x +=1
-			with st.spinner("Generating the quiz..."):
-				json_questions = st.session_state['questions']
-				
-			file_name = uploaded_file.name 
-
-			if file_name.endswith(".pdf"):
-				file_name = file_name[:-4]
-
-			with open(f"data/quiz{file_name}.json", "w", encoding="latin1", errors="ignore") as f:
-				str = json.dumps(json_questions)
-				f.write(str)
-
-			generate_pdf_quiz(f"data/quiz{file_name}.json", json_questions)
-
-			st.write("PDF Quiz generated")
